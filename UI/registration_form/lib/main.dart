@@ -24,6 +24,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
   String _email = '';
   String _password = '';
+  String _phone = '';
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
@@ -31,6 +32,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
       // Здесь можно отправить данные на сервер или выполнить другие действия
       print('Email: $_email');
       print('Password: $_password');
+      print('Phone: $_phone');
     }
   }
 
@@ -73,6 +75,19 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 },
                 onSaved: (value) {
                   _password = value ?? '';
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Phone'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your Phone';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _phone = value ?? '';
                 },
               ),
               SizedBox(height: 20),

@@ -17,7 +17,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// Сохранение пользователя в базе данных
+	// Сохранение пользователя в базе данных через GORM
 	result := configs.DB.Create(&user)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})

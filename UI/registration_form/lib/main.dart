@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() => runApp(MyApp());
 
@@ -25,18 +27,47 @@ class _RegistrationFormState extends State<RegistrationForm> {
   String _email = '';
   String _password = '';
   String _phone = '';
+  String _confirmPassword = '';
+  String _message = ''; // Добавьте переменную для сообщения
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
-      // Здесь можно отправить данные на сервер или выполнить другие действия
-      print('Email: $_email');
-      print('Password: $_password');
-      print('Phone: $_phone');
+
+      final url = Uri.parse('http://localhost:8080/auth/register');
+      final headers = {'Content-Type': 'application/json'};
+      final body = json.encode({
+        'email': _email,
+        'password_hash': _password,
+        'phone': _phone,
+      });
+
+      try {
+        final response = await http.post(url, headers: headers, body: body);
+
+        if (response.statusCode == 200) {
+          // Успешно
+          setState(() {
+            _message = 'Пользователь успешно зарегистрирован';
+          });
+        } else {
+          // Ошибка
+          setState(() {
+            _message = 'Ошибка регистрации. Статус: ${response.statusCode}';
+          });
+        }
+      } catch (e) {
+        setState(() {
+          _message = 'Ошибка: $e';
+        });
+      }
+
+      // Показываем SnackBar с сообщением
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_message)));
     }
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -78,8 +109,23 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 },
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Phone'),
+                decoration: InputDecoration(labelText: 'Confirm Password'),
                 obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please confirm your password';
+                  }
+                  if (value != _password) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _confirmPassword = value ?? '';
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Phone'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your Phone';

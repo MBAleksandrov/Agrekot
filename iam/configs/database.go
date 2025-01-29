@@ -1,12 +1,16 @@
 package configs
 
 import (
-	"database/sql"
 	"fmt"
-	"os"
+	"log"
 
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
+
+// Глобальная переменная для базы данных
+var DB *gorm.DB
 
 type DatabaseConfig struct {
 	Host     string
@@ -16,28 +20,32 @@ type DatabaseConfig struct {
 	DBName   string
 }
 
+// Загружаем конфигурацию базы данных из переменных окружения
 func LoadDatabaseConfig() DatabaseConfig {
 	return DatabaseConfig{
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		DBName:   os.Getenv("DB_NAME"),
+		Host:     "138.124.81.155", // Указываем IP адрес сервера
+		Port:     "5432",           // Указываем порт
+		User:     "iam_user",       // Имя пользователя
+		Password: "Agr3k0t_iam",    // Пароль
+		DBName:   "iam_db",         // Имя базы данных
 	}
 }
 
-func ConnectDB(config DatabaseConfig) (*sql.DB, error) {
+// Функция для подключения к базе данных с использованием GORM
+func ConnectDB() {
+	config := LoadDatabaseConfig()
+
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.Host, config.Port, config.User, config.Password, config.DBName)
 
-	db, err := sql.Open("postgres", dsn)
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info), // Логи запросов
+	})
+
 	if err != nil {
-		return nil, err
+		log.Fatalf("Не удалось подключиться к базе данных: %v", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-
-	return db, nil
+	log.Println("Подключение к базе данных успешно установлено!")
 }

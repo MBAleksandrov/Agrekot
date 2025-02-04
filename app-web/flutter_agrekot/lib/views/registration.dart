@@ -1,78 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Registration Form',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: RegistrationForm(),
-    );
-  }
-}
+import 'package:flutter_agrekot/services/s_registration.dart'; // Импортируем сервис
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 class RegistrationForm extends StatefulWidget {
+  const RegistrationForm({super.key});
+
   @override
   _RegistrationFormState createState() => _RegistrationFormState();
 }
 
 class _RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
   String _email = '';
-  String _password = '';
   String _phone = '';
-  String _confirmPassword = '';
-  String _message = ''; // Добавьте переменную для сообщения
+  String _countryCode = '';
 
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
+      String fullPhoneNumber = '$_countryCode$_phone';
+      String message = await ApiService.registerUser(_email, _passwordController.text, fullPhoneNumber);
 
-      final url = Uri.parse('http://localhost:8080/auth/register');
-      final headers = {'Content-Type': 'application/json'};
-      final body = json.encode({
-        'email': _email,
-        'password_hash': _password,
-        'phone': _phone,
-      });
-
-      try {
-        final response = await http.post(url, headers: headers, body: body);
-
-        if (response.statusCode == 200) {
-          // Успешно
-          setState(() {
-            _message = 'Пользователь успешно зарегистрирован';
-          });
-        } else {
-          // Ошибка
-          setState(() {
-            _message = 'Ошибка регистрации. Статус: ${response.statusCode}';
-          });
-        }
-      } catch (e) {
-        setState(() {
-          _message = 'Ошибка: $e';
-        });
-      }
-
-      // Показываем SnackBar с сообщением
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_message)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
-@override
+  void _verifySms() {
+    // Логика проверки SMS-кода
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('SMS verification in progress...')));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Registration Form'),
-      ),
+      appBar: AppBar(title: Text('Registration Form')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -91,11 +56,10 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  _email = value ?? '';
-                },
+                onSaved: (value) => _email = value ?? '',
               ),
               TextFormField(
+                controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
@@ -104,42 +68,38 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  _password = value ?? '';
-                },
               ),
               TextFormField(
+                controller: _confirmPasswordController,
                 decoration: InputDecoration(labelText: 'Confirm Password'),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please confirm your password';
                   }
-                  if (value != _password) {
+                  if (value != _passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  _confirmPassword = value ?? '';
-                },
               ),
-              TextFormField(
+              IntlPhoneField(
                 decoration: InputDecoration(labelText: 'Phone'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your Phone';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _phone = value ?? '';
+                initialCountryCode: 'US',
+                onChanged: (phone) {
+                  _countryCode = phone.countryCode;
+                  _phone = phone.number;
                 },
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,
                 child: Text('Register'),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _verifySms,
+                child: Text('Verify SMS'),
               ),
             ],
           ),

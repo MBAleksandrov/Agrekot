@@ -1,4 +1,4 @@
-name: registration_form
+name: flutter_agrekot
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.3.0
+  intl_phone_field: ^3.2.0
   
 
   # The following adds the Cupertino Icons font to your application.
@@ -53,11 +54,12 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - packages/intl_phone_field/assets/flags/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -74,12 +74,6 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "intl_phone_field",
-      "rootUri": "file:///C:/Users/chiri/AppData/Local/Pub/Cache/hosted/pub.dev/intl_phone_field-3.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "leak_tracker",
       "rootUri": "file:///C:/Users/chiri/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.7",
       "packageUri": "lib/",
@@ -194,13 +188,13 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "flutter_agrekot",
+      "name": "registration_form",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-02-04T21:24:58.236445Z",
+  "generated": "2025-02-04T21:24:32.943003Z",
   "generator": "pub",
   "generatorVersion": "3.6.1",
   "flutterRoot": "file:///C:/flutter",

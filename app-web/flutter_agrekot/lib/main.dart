@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'views/registration.dart';
+import 'views/authorization.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: const RegistrationForm(),
+      routes: {
+        '/authorization': (context) => AuthorizationScreen(),
+      },
     );
   }
 }

@@ -34,6 +34,10 @@ class _RegistrationFormState extends State<RegistrationForm> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('SMS verification in progress...')));
   }
 
+  void _navigateToLogin() {
+    Navigator.pushNamed(context, '/authorization');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,6 +104,11 @@ class _RegistrationFormState extends State<RegistrationForm> {
               ElevatedButton(
                 onPressed: _verifySms,
                 child: Text('Verify SMS'),
+              ),
+              SizedBox(height: 10),
+              TextButton(
+                onPressed: _navigateToLogin,
+                child: Text('Войти'),
               ),
             ],
           ),
